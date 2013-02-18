@@ -12,6 +12,7 @@ module sub_bytes
    );
   
 
+   // Substitute on a per byte basis
    sbox u_sbox_0 (.clk (clk), .din(din[  7:  0]), .dout(dout[  7:  0]));
    sbox u_sbox_1 (.clk (clk), .din(din[ 15:  8]), .dout(dout[ 15:  8]));
    sbox u_sbox_2 (.clk (clk), .din(din[ 23: 16]), .dout(dout[ 23: 16]));

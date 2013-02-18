@@ -12,7 +12,7 @@ module sbox
    );
   
   
-   reg [7:0]        sbox [0:7];
+   reg [7:0]        sbox [0:255];
 
 
    // Initialize the Memory
