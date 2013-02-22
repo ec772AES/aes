@@ -3,7 +3,7 @@
 // EC772 - Spring 2013
 //--------------------------------------------------
 
-module key_expansion_pipeline(
+module key_expansion_logic(
 	input 			clk,
 	input 			rst,
 	input				load_enable,
