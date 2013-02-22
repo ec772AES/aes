@@ -23,28 +23,19 @@ module key_expansion(
 				  ROUND_7 	= 4'd8,
 				  ROUND_8 	= 4'd9,
 				  ROUND_9 	= 4'd10,
-				  ROUND_10 	= 4'd11,
-				  DONE 		= 4'd12;
+				  DONE 		= 4'd11;
 	
 	/* four bits for state */
-	reg [3:0] state, next;
-	
-	reg  [31:0] B0, B1, B2, B4;
-	wire [31:0] W0, W1, W2, W3;
-	wire [31:0] rcon_out, sub_bytes_out, rot_bytes_out;
-	wire [3:0] rcon_addr;
+	reg  [3:0] 	state, next;	
+	wire [3:0] 	rcon_addr;
+	wire [31:0] rcon_out;
 	wire load_enable;	
 	
 	/* shift to next state allow for async reset */
-	always @(posedge clk or posedge rest)
+	always @(posedge clk or posedge rst)
 		if (rst) state <= READY;
 		else begin
 			state <= next;
-			/* Note that this read in is very convoluted. I assume bit 0 is received first and bit 128 last */
-			B0 <= load_enable ? [key_in[  7: 0] key_in[ 15:  8] key_in[ 23: 16] key_in[ 31: 24]] : W0;
-			B1 <= load_enable ? [key_in[ 39:32] key_in[ 47: 40] key_in[ 55: 48] key_in[ 63: 56]] : W1;
-			B2 <= load_enable ? [key_in[ 71:64] key_in[ 79: 72] key_in[ 87: 80] key_in[ 95: 88]] : W2;
-			B3 <= load_enable ? [key_in[103:96] key_in[111:104] key_in[119:112] key_in[127:120]] : W3;
 		end
 	
 	/* next state combinational logic */
@@ -62,8 +53,8 @@ module key_expansion(
 					  end else 				
 						next 			= READY;
 			INIT : begin 							  /* B0 B1 B2 B3 all set */
-						next 		= ROUND_1;
-						key_addr = 4'd1; 			  /* 1st key ready */
+						next 			= ROUND_1; 	 /* 1st key ready */
+						key_addr 	= 4'd1; 			  
 					 end
 			ROUND_1 : begin
 							next 			= ROUND_2; /* 2nd key ready */
@@ -106,13 +97,9 @@ module key_expansion(
 							rcon_addr 	= 4'd8;
 						end
 			ROUND_9 : begin
-							next 			= ROUND_10; /* 10th key ready */
+							next 			= DONE; /* 10th key ready */
 							key_addr 	= 4'd10;
 							rcon_addr 	= 4'd9;
-						end
-			ROUND_10 : begin
-							next 			= DONE; 		/* 11th key ready */
-							key_addr 	= 4'd11;
 						end
 			DONE : begin
 						next = DONE;
@@ -123,22 +110,14 @@ module key_expansion(
 	rcon u_rcon(
 				.clk(clk),
 				.addr(rcon_addr),
-				.dout(rcon_out));
-				
-	sub_bytes u_sub_bytes(
+				.dout(rcon_out));	
+	
+	key_expansion_pipeline(
 					.clk(clk),
-					.din(rot_bytes_out), /* 128 bit, but only the lowest 32bits are used ??? */
-					.dout(sub_bytes_out)); /* 128 bit, but only the lowest 32bits are used ??? */ 
-	
-	rot_byte u_rot_bytes(
-					.din(W3), /* 32bit input */
-					.dout(rot_bytes_out)); /* 32bit output */
-	
-	assign W0 = load_enable ? B0 : B0 ^ sub_bytes_out ^ rcon_out;
-	assign W1 = load_enable ? B1 : B1 ^ W0;
-	assign W2 = load_enable ? B2 : B2 ^ W1;
-	assign W3 = load_enable ? B3 : B3 ^ W2; /* longest path 2 memory retrivals (in parallel) and 5 xors. */
-	
-	assign key_out = [B3 B2 B1 B0];
+					.rst(rst),
+					.load_enable(load_enable),
+					.key_in(key_in),
+					.rcon_in(rcon_out),
+					.key_out(key_out));
 	
 endmodule
