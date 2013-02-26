@@ -5,13 +5,31 @@
 
 module add_rkey
   (
+   input              clk,
+   input              rst,
    input      [127:0] rkey,
+   input      [3:0]   addr,
    input      [127:0] din,
    output reg [127:0] dout
    );
 
+  parameter ADDRESS = 4'd0;
 
-   assign dout = din ^ rkey;
+  reg [127:0] key;
+
+  // Add the round key to the data
+  assign    dout = din ^ rkey;
+
+  
+  // Register the round key
+  always @(posedge clk)
+    if (rst)
+      key <= 128'd0;
+    else
+      if (addr == ADDRESS)
+        key <= rkey;
+      else
+        key <= key;
   
    
 endmodule
