@@ -21,7 +21,7 @@ module rcon
    // Read Only Memory
    always @(posedge clk) begin
      dout <= rcon[addr];
-	end
-	  
-	  
+	 end
+
+
 endmodule
