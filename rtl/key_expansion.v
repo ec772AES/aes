@@ -10,8 +10,8 @@ module key_expansion(
         input  [1:0]    key_in_type,    /* type of input key at key_in */
         input  [127:0]  key_in,         /* input key I ASSUME bit0 is the first bit received and bit 128 the last one.*/
         output [127:0]  key_out,        /* output to register's in Ben's design */
-        output [3:0]    key_addr,       /* 1,...,10 for 10 keys, 0 nonvalid addr */
-        output          key_loaded);    /* key completely loaded */
+        output reg [3:0] key_addr,       /* 1,...,10 for 10 keys, 0 nonvalid addr */
+        output reg       key_loaded);    /* key completely loaded */
 
         localparam TYPE_KEY = 2'b10;
         localparam READY		= 4'd0,
@@ -31,11 +31,14 @@ module key_expansion(
         reg  [3:0]  state, next;
         wire [3:0]  rcon_addr;
         wire [31:0] rcon_out;
-        wire load_enable;
+        reg load_enable;
+        
+        /* note that rcon_addr is not always key_addr - 1 */
+        assign rcon_addr = (key_addr==4'd0 || key_addr>=4'd10 ) ? 4'd0 : key_addr - 4'd1;
 
         /* shift to next state allow for async reset */
         always @(posedge clk or posedge rst)
-          if (rst) 
+          if (rst)
           	state <= READY;
           else begin
             state <= next;
@@ -44,11 +47,9 @@ module key_expansion(
         /* next state combinational logic */
         always @(state or key_in_valid or key_in_type) begin
           next        = 4'bxxxx;
-          key_out     = 'b0;
           load_enable = 'b0;
           key_loaded  = 'b0;
           key_addr    = 4'd0;
-          rcon_addr   = 4'd0; /* note that rcon_addr is not always key_addr - 1 */
           case (state)
             READY : if (key_in_valid & (key_in_type == TYPE_KEY)) begin
                       next = ROUND_1;
@@ -62,42 +63,34 @@ module key_expansion(
             ROUND_2 : begin
                         next      = ROUND_3; /* 2nd key ready */
                         key_addr  = 4'd2;
-                        rcon_addr = 4'd1;
                       end
             ROUND_3 : begin
                         next      = ROUND_4; /* 3rd key ready */
                         key_addr  = 4'd3;
-                        rcon_addr = 4'd2;
                       end
             ROUND_4 : begin
                         next      = ROUND_5; /* 4th key ready */
                         key_addr  = 4'd4;
-                        rcon_addr = 4'd3;
                       end
             ROUND_5 : begin
                         next      = ROUND_6; /* 5th key ready */
                         key_addr  = 4'd5;
-                        rcon_addr = 4'd4;
                       end
             ROUND_6 : begin
                         next      = ROUND_7; /* 6th key ready */
                         key_addr  = 4'd6;
-                        rcon_addr = 4'd5;
                       end
             ROUND_7 : begin
                         next      = ROUND_8; /* 7th key ready */
                         key_addr  = 4'd7;
-                        rcon_addr = 4'd6;
                       end
             ROUND_8 : begin
                         next      = ROUND_9; /* 8th key ready */
                         key_addr  = 4'd8;
-                        rcon_addr = 4'd7;
                       end
             ROUND_9 : begin
                         next      = ROUND_10; /* 9th key ready */
                         key_addr  = 4'd9;
-                        rcon_addr = 4'd8;
                       end
             ROUND_10 : begin
                         next     = DONE; 			/* 10th key ready */
