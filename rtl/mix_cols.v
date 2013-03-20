@@ -6,7 +6,7 @@
 module mix_cols
   (
    input      [127:0] din,
-   output reg [127:0] dout
+   output     [127:0] dout
    );
 
 

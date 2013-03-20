@@ -6,10 +6,10 @@
 module key_expansion_logic(
 	input 				clk,
 	input 				rst,
-	input					load_enable,
-	input [127:0] key_in,
-	input [31:0] 	rcon_in,
-	input [127:0] key_out);
+	input				load_enable,
+	input  [127:0] 		key_in,
+	input  [31:0]  		rcon_in,
+	output [127:0] 		key_out);
 
 	reg  [31:0] R0, R1, R2, R3;
 	wire [31:0] W0, W1, W2, W3;

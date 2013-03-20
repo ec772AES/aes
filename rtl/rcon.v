@@ -15,7 +15,7 @@ module rcon
 
 
    // Initialize the Memory
-   initial $readmemh("../rtl/rcon.dat", rcon);
+   initial $readmemh("rcon.dat", rcon);
 
 
    // Read Only Memory

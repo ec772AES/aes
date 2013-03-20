@@ -6,7 +6,7 @@
 module shift_rows
   (
    input      [127:0] din,
-   output reg [127:0] dout
+   output	  [127:0] dout
    );
 
 

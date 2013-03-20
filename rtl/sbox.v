@@ -16,7 +16,7 @@ module sbox
 
 
    // Initialize the Memory
-   initial $readmemh("../rtl/sbox.dat", sbox);
+   initial $readmemh("sbox.dat", sbox);
   
 
    // Read Only Memory

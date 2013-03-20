@@ -8,15 +8,15 @@ module stream_in
    input              clk,
    input              rst,
    input              vin,
-   input              tin,
+   input      [1:0]   tin,
    input      [15:0]  din,
    output             vout,
-   output reg         tout,
+   output reg [1:0]   tout,
    output reg [127:0] dout
    );
   
   reg [2:0]       counter, counter_r;
-  reg             tin_r;
+  reg [1:0]       tin_r;
   
 
   // Register the output data
@@ -37,7 +37,7 @@ module stream_in
   // Register the input type
   always @(posedge clk)
     if (rst)
-      tin_r <= 1'b0;
+      tin_r <= 2'b00;
     else
       if (vin & (counter == 3'b000))
         tin_r <= tin;
@@ -48,7 +48,7 @@ module stream_in
   // Register output type
   always @(posedge clk)
     if (rst)
-      tout <= 1'b0;
+      tout <= 2'b00;
     else
       if (counter == 3'b111)
         tout <= tin_r;

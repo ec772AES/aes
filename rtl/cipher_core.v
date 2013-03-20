@@ -40,11 +40,14 @@ module cipher_core
   parameter MODE_ECB     = 1'b0;
   parameter MODE_CTR     = 1'b1;
 
+  wire [127:0] enc_dout, dec_dout;
+  wire [127:0] ctrl_dout;
+  wire         ctrl_vout, ctrl_tout;
 
-  reg [127:0] crypto_din, enc_dout, dec_dout;
-  reg [127:0] ctrl_din,   ctrl_dout;
-  reg         ctrl_vin,   ctrl_vout;
-  reg         ctrl_tin,   ctrl_tout;
+  reg [127:0] crypto_din;
+  reg [127:0] ctrl_din;
+  reg         ctrl_vin;
+  reg         ctrl_tin;
   
   reg [127:0] iv_enc;
   reg [127:0] iv_dec;

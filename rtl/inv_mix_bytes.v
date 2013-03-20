@@ -10,10 +10,10 @@ module inv_mix_bytes
    input [7:0]      i2,
    input [7:0]      i3,
    
-   output reg [7:0] o0,
-   output reg [7:0] o1,
-   output reg [7:0] o2,
-   output reg [7:0] o3
+   output [7:0] o0,
+   output [7:0] o1,
+   output [7:0] o2,
+   output [7:0] o3
    );
 
    wire [7:0]       m0,   m1,   m2,   m3;

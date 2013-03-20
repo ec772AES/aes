@@ -16,7 +16,7 @@ module inv_sbox
 
 
    // Initialize the Memory
-   initial $readmemh("../rtl/inv_sbox.dat", inv_sbox);
+   initial $readmemh("inv_sbox.dat", inv_sbox);
   
 
    // Read Only Memory

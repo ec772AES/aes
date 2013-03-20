@@ -10,7 +10,7 @@ module add_rkey
    input      [127:0] rkey,
    input      [3:0]   addr,
    input      [127:0] din,
-   output reg [127:0] dout
+   output     [127:0] dout
    );
 
   parameter ADDRESS = 4'd0;
