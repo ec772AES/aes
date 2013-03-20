@@ -6,10 +6,10 @@
 module key_expansion_logic(
 	input 				clk,
 	input 				rst,
-	input				load_enable,
-	input  [127:0] 		key_in,
-	input  [31:0]  		rcon_in,
-	output [127:0] 		key_out);
+	input					load_enable,
+	input [127:0] key_in,
+	input [31:0] 	rcon_in,
+	output [127:0] key_out);
 
 	reg  [31:0] R0, R1, R2, R3;
 	wire [31:0] W0, W1, W2, W3;
@@ -30,10 +30,11 @@ module key_expansion_logic(
 			R3 <= load_enable ? {key_in[103:96], key_in[111:104], key_in[119:112], key_in[127:120]} : W3;
 		end
 
-	assign W0 = load_enable ? R0 : R0 ^ {sbyte3, sbyte2, sbyte1, sbyte0} ^ rcon_in;
-	assign W1 = load_enable ? R1 : R1 ^ W0;
-	assign W2 = load_enable ? R2 : R2 ^ W1;
-	assign W3 = load_enable ? R3 : R3 ^ W2; /* longest path 2 memory retrivals (in parallel) and 5 xors. */
+  /* Set to 0 if rst is 1 to give a default value after reset, MP */
+	assign W0 = (rst) ? 0 : (load_enable ? R0 : R0 ^ {sbyte3, sbyte2, sbyte1, sbyte0} ^ rcon_in);
+	assign W1 = (rst) ? 0 : (load_enable ? R1 : R1 ^ W0);
+	assign W2 = (rst) ? 0 : (load_enable ? R2 : R2 ^ W1);
+	assign W3 = (rst) ? 0 : (load_enable ? R3 : R3 ^ W2); /* longest path 2 memory retrivals (in parallel) and 5 xors. */
 
 	assign key_out = {R3, R2, R1, R0};
 
