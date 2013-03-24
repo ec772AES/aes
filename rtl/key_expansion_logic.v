@@ -24,10 +24,16 @@ module key_expansion_logic(
 			R3 <= 32'd0;
 		end else begin
 			/* Note that this read-in is convoluted. I assume bit 0 is received first and bit 128 last */
-			R0 <= load_enable ? {key_in[  7: 0], key_in[ 15:  8], key_in[ 23: 16], key_in[ 31: 24]} : W0;
-			R1 <= load_enable ? {key_in[ 39:32], key_in[ 47: 40], key_in[ 55: 48], key_in[ 63: 56]} : W1;
-			R2 <= load_enable ? {key_in[ 71:64], key_in[ 79: 72], key_in[ 87: 80], key_in[ 95: 88]} : W2;
-			R3 <= load_enable ? {key_in[103:96], key_in[111:104], key_in[119:112], key_in[127:120]} : W3;
+			/* Not sure why convoluted, but read in normally */
+			R0 <= load_enable ? {key_in[ 31: 24], key_in[ 23: 16], key_in[ 15:  8], key_in[  7: 0]} : W0;
+			R1 <= load_enable ? {key_in[ 63: 56], key_in[ 55: 48], key_in[ 47: 40], key_in[ 39:32]} : W1;
+			R2 <= load_enable ? {key_in[ 95: 88], key_in[ 87: 80], key_in[ 79: 72], key_in[ 71:64]} : W2;
+			R3 <= load_enable ? {key_in[127:120], key_in[119:112], key_in[111:104], key_in[103:96]} : W3;
+
+		//	R0 <= load_enable ? {key_in[  7: 0], key_in[ 15:  8], key_in[ 23: 16], key_in[ 31: 24]} : W0;
+		//	R1 <= load_enable ? {key_in[ 39:32], key_in[ 47: 40], key_in[ 55: 48], key_in[ 63: 56]} : W1;
+		//	R2 <= load_enable ? {key_in[ 71:64], key_in[ 79: 72], key_in[ 87: 80], key_in[ 95: 88]} : W2;
+		//	R3 <= load_enable ? {key_in[103:96], key_in[111:104], key_in[119:112], key_in[127:120]} : W3;
 		end
 
   /* Set to 0 if rst is 1 to give a default value after reset, MP */
