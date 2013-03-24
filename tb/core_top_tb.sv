@@ -59,16 +59,16 @@ module core_top_tb;
       
       crypto_mode = 0;
       din_type = 2'b10;
-      din_data = 16'h0011;
+      din_data = 16'h2b7e;
       din_valid = 1;
       
-      #2 din_data = 16'h2233;
-      #2 din_data = 16'h4455;
-      #2 din_data = 16'h6677;
-      #2 din_data = 16'h8899;
-      #2 din_data = 16'haabb;
-      #2 din_data = 16'hccdd;
-      #2 din_data = 16'heeff;
+      #2 din_data = 16'h1516;
+      #2 din_data = 16'h28ae;
+      #2 din_data = 16'hd2a6;
+      #2 din_data = 16'habf7;
+      #2 din_data = 16'h1588;
+      #2 din_data = 16'h09cf;
+      #2 din_data = 16'h4f3c;
       #2 din_valid = 0;
       din_data = 16'h0000;
       
@@ -89,7 +89,7 @@ module core_top_tb;
 			#2 din_valid = 0;
       
       
-      #50000;
+      #50;
       end_test();
   end
 
