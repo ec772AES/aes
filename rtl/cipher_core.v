@@ -14,8 +14,8 @@ module cipher_core
    input  [127:0]  din,
    
    // Stream Out IF
-   output              vout,
-   output              tout,
+   output reg          vout,
+   output reg          tout,
    output reg  [127:0] dout,
 
    // Key Expand IF
@@ -174,22 +174,30 @@ module cipher_core
 
 
   // --- Cipher Data Out Controller ---
-  // Register the Data Out
+  // Register the Type, Valid, and Data Out
   always @(posedge clk)
     if (rst)
-      dout <= 128'd0;
+      begin
+         tout <= 0;
+         vout <= 0;
+         dout <= 128'd0;
+      end
     else
-      if (ctrl_vout)
-        if (crypto_mode_r == MODE_ECB)
-          if (ctrl_tout == TYPE_OUT_ENC)
-            dout <= enc_dout;
-          else // ECB, DEC
-            dout <= dec_dout;
-        else // CTR, ENC/DEC
-          dout <= enc_dout ^ ctrl_dout;
-      else
-        dout <= 128'd0;
-  
+      begin
+         tout <= ctrl_tout;
+         vout <= ctrl_vout;
+         
+         if (ctrl_vout)
+           if (crypto_mode_r == MODE_ECB)
+             if (ctrl_tout == TYPE_OUT_ENC)
+               dout <= enc_dout;
+             else // ECB, DEC
+               dout <= dec_dout;
+           else // CTR, ENC/DEC
+             dout <= enc_dout ^ ctrl_dout;
+         else
+           dout <= 128'd0;
+      end
   
 endmodule
 

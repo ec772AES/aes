@@ -28,11 +28,11 @@ module mix_bytes
    assign r3_1 = i3;
 
    // Galios Field multiply 2
-   assign r0_2 = {r0_1[6:0], 1'b0} ^ ((r0_1[7]) ? 8'h1B : 8'h00);
-   assign r1_2 = {r1_1[6:0], 1'b0} ^ ((r1_1[7]) ? 8'h1B : 8'h00);
-   assign r2_2 = {r2_1[6:0], 1'b0} ^ ((r2_1[7]) ? 8'h1B : 8'h00);
-   assign r3_2 = {r3_1[6:0], 1'b0} ^ ((r3_1[7]) ? 8'h1B : 8'h00);
-
+   gf_mul2 u_gf_2 (.i0(r0_1), .o0(r0_2),
+                   .i1(r1_1), .o1(r1_2),
+                   .i2(r2_1), .o2(r2_2),
+                   .i3(r3_1), .o3(r3_2));
+   
    // Galios Field multiply 3
    assign r0_3 = r0_1 ^ r0_2;
    assign r1_3 = r1_1 ^ r1_2;

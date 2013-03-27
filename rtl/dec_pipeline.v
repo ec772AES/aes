@@ -13,20 +13,30 @@ module dec_pipeline
    output [127:0] dout
    );
 
-  wire [127:0] rnd1, rnd2, rnd3,
+  wire [127:0] pre,
+               rnd1, rnd2, rnd3,
                rnd4, rnd5, rnd6,
                rnd7, rnd8, rnd9;
-  
-  dec_round_first #(4'd1)
-    u_round_1
+
+   add_rkey #(4'd11)
+    u_add_rkey
       (.clk  (clk),
        .rst  (rst),
        .rkey (rkey),
        .addr (addr),
        .din  (din),
+       .dout (pre));
+   
+  dec_round #(4'd10)
+    u_round_1
+      (.clk  (clk),
+       .rst  (rst),
+       .rkey (rkey),
+       .addr (addr),
+       .din  (pre),
        .dout (rnd1));
   
-  dec_round #(4'd2)
+  dec_round #(4'd9)
     u_round_2
       (.clk  (clk),
        .rst  (rst),
@@ -35,7 +45,7 @@ module dec_pipeline
        .din  (rnd1),
        .dout (rnd2));
   
-  dec_round #(4'd3)
+  dec_round #(4'd8)
     u_round_3
       (.clk  (clk),
        .rst  (rst),
@@ -44,7 +54,7 @@ module dec_pipeline
        .din  (rnd2),
        .dout (rnd3));
   
-  dec_round #(4'd4)
+  dec_round #(4'd7)
     u_round_4
       (.clk  (clk),
        .rst  (rst),
@@ -53,7 +63,7 @@ module dec_pipeline
        .din  (rnd3),
        .dout (rnd4));
   
-  dec_round #(4'd5)
+  dec_round #(4'd6)
     u_round_5
       (.clk  (clk),
        .rst  (rst),
@@ -62,7 +72,7 @@ module dec_pipeline
        .din  (rnd4),
        .dout (rnd5));
   
-  dec_round #(4'd6)
+  dec_round #(4'd5)
     u_round_6
       (.clk  (clk),
        .rst  (rst),
@@ -71,7 +81,7 @@ module dec_pipeline
        .din  (rnd5),
        .dout (rnd6));
   
-  dec_round #(4'd7)
+  dec_round #(4'd4)
     u_round_7
       (.clk  (clk),
        .rst  (rst),
@@ -80,7 +90,7 @@ module dec_pipeline
        .din  (rnd6),
        .dout (rnd7));
   
-  dec_round #(4'd8)
+  dec_round #(4'd3)
     u_round_8
       (.clk  (clk),
        .rst  (rst),
@@ -89,7 +99,7 @@ module dec_pipeline
        .din  (rnd7),
        .dout (rnd8));
   
-  dec_round #(4'd9)
+  dec_round #(4'd2)
     u_round_9
       (.clk  (clk),
        .rst  (rst),
@@ -98,7 +108,7 @@ module dec_pipeline
        .din  (rnd8),
        .dout (rnd9));
   
-  dec_round #(4'd10)
+  dec_round_last #(4'd1)
     u_round_10
       (.clk  (clk),
        .rst  (rst),
@@ -106,7 +116,7 @@ module dec_pipeline
        .addr (addr),
        .din  (rnd9),
        .dout (dout));
-  
+
    
 endmodule
 

@@ -18,7 +18,7 @@ module add_rkey
   reg [127:0] key;
 
   // Add the round key to the data
-  assign    dout = din ^ rkey;
+  assign    dout = din ^ key;
 
   
   // Register the round key

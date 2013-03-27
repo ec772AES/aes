@@ -11,17 +11,21 @@ module rcon
    );
 
 
-   reg [31:0]        rcon [0:10];
+   reg [31:0]        rcon [0:15];
 
 
    // Initialize the Memory
+   `ifdef USING_RUNSIM
+   initial $readmemh("../rtl/rcon.dat", rcon);
+   `else
    initial $readmemh("rcon.dat", rcon);
+   `endif
 
 
    // Read Only Memory
    always @(posedge clk) begin
      dout <= rcon[addr];
-	 end
+     end
 
 
 endmodule

@@ -16,8 +16,12 @@ module sbox
 
 
    // Initialize the Memory
+   `ifdef USING_RUNSIM
+   initial $readmemh("../rtl/sbox.dat", sbox);
+   `else
    initial $readmemh("sbox.dat", sbox);
-  
+   `endif
+   
 
    // Read Only Memory
    always @(posedge clk)

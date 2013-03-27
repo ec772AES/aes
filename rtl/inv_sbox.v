@@ -16,7 +16,11 @@ module inv_sbox
 
 
    // Initialize the Memory
+   `ifdef USING_RUNSIM
+   initial $readmemh("../rtl/inv_sbox.dat", inv_sbox);
+   `else
    initial $readmemh("inv_sbox.dat", inv_sbox);
+   `endif
   
 
    // Read Only Memory

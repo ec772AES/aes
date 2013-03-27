@@ -4,18 +4,18 @@
 //--------------------------------------------------
 
 module key_expansion(
-        input 					clk,            /* clock */
+        input                   clk,            /* clock */
         input           rst,            /* reset line -- high active */
         input           key_in_valid,   /* valid input key at key_in */
         input  [1:0]    key_in_type,    /* type of input key at key_in */
         input  [127:0]  key_in,         /* input key I ASSUME bit0 is the first bit received and bit 128 the last one.*/
         output [127:0]  key_out,        /* output to register's in Ben's design */
-        output reg [3:0] key_addr,       /* 1,...,10 for 10 keys, 0 nonvalid addr */
+        output reg [3:0] key_addr,       /* 1,...,11 for 11 keys, 0 nonvalid addr */
         output reg       key_loaded);    /* key completely loaded */
 
         localparam TYPE_KEY = 2'b10;
-        localparam READY		= 4'd0,
-        					 ROUND_1  = 4'd1,
+        localparam READY    = 4'd0,
+                   ROUND_1  = 4'd1,
                    ROUND_2  = 4'd2,
                    ROUND_3  = 4'd3,
                    ROUND_4  = 4'd4,
@@ -25,7 +25,8 @@ module key_expansion(
                    ROUND_8  = 4'd8,
                    ROUND_9  = 4'd9,
                    ROUND_10 = 4'd10,
-                   DONE     = 4'd11;
+                   ROUND_11 = 4'd11,
+                   DONE     = 4'd12;
 
         /* four bits for state */
         reg  [3:0]  state, next;
@@ -34,19 +35,19 @@ module key_expansion(
         reg load_enable;
         
         /* note that rcon_addr is not always key_addr - 1 */
-        assign rcon_addr = (key_addr==4'd0 || key_addr>=4'd10 ) ? 4'd0 : key_addr - 4'd1;
+        assign rcon_addr = key_addr;
 
         /* shift to next state allow for async reset */
         always @(posedge clk or posedge rst)
           if (rst)
-          	state <= READY;
+            state <= READY;
           else begin
             state <= next;
           end
 
         /* next state combinational logic */
         always @(state or key_in_valid or key_in_type) begin
-          next        = 4'bxxxx;
+          next        = READY;
           load_enable = 'b0;
           key_loaded  = 'b0;
           key_addr    = 4'd0;
@@ -93,8 +94,12 @@ module key_expansion(
                         key_addr  = 4'd9;
                       end
             ROUND_10 : begin
-                        next     = DONE; 			/* 10th key ready */
-                        key_addr = 4'd10;
+                        next      = ROUND_11; /* 10th key ready */
+                        key_addr  = 4'd10;
+                      end
+            ROUND_11 : begin
+                        next      = DONE;     /* 11th key ready */
+                        key_addr  = 4'd11;
                       end
             DONE : begin
                     next = DONE;
@@ -104,7 +109,7 @@ module key_expansion(
         end
 
         rcon u_rcon(
-        						.clk(clk),
+                    .clk(clk),
                     .addr(rcon_addr),
                     .dout(rcon_out));
 

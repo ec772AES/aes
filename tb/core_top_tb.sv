@@ -49,53 +49,11 @@ module core_top_tb;
   
 
   // Include the test file
-  initial
-    begin
-      #100
-      init_test("Example Test");
-      #10;
-      rst = 0;
-      msg_info("Letting DUT out of rst");
-      
-      crypto_mode = 0;
-      din_type = 2'b10;
-      din_data = 16'h2b7e;
-      din_valid = 1;
-      
-      #2 din_data = 16'h1516;
-      #2 din_data = 16'h28ae;
-      #2 din_data = 16'hd2a6;
-      #2 din_data = 16'habf7;
-      #2 din_data = 16'h1588;
-      #2 din_data = 16'h09cf;
-      #2 din_data = 16'h4f3c;
-      #2 din_valid = 0;
-      din_data = 16'h0000;
-      
-  end
-  
-  always @(posedge crypto_ready)
-  begin
-      din_type = 2'b00;
-      din_valid = 1;
-      din_data = 16'h0011;
-			#2 din_data = 16'h2233;
-			#2 din_data = 16'h4455;
-			#2 din_data = 16'h6677;
-			#2 din_data = 16'h8899;
-			#2 din_data = 16'haabb;
-			#2 din_data = 16'hccdd;
-			#2 din_data = 16'heeff;
-			#2 din_valid = 0;
-      
-      
-      #50;
-      end_test();
-  end
+  `include "stim.v"
 
 
   // Instanciate the DUT
-  core_top
+   core_top
     u_dut
       (.clk            (clk),
        .rst            (rst),
@@ -114,6 +72,38 @@ module core_top_tb;
 
   // TB Tasks & Functions
 
+  //------------------------------------------------------------
+  // tx_data
+  // Send data into the DUT
+  //------------------------------------------------------------
+  task tx_data (input bit [127:0] tx_data, bit [1:0] tx_type);
+     msg_info($sformatf("Transmitting type=%b, data=0x%h", tx_type, tx_data));
+     repeat(8)
+       begin
+          @(posedge clk);
+          din_valid = 1;
+          din_type  = tx_type;
+          din_data  = tx_data[127:112];
+          tx_data   = {tx_data[111:0], 16'h0};
+       end
+  endtask
+
+  //------------------------------------------------------------
+  // rx_data
+  // Get data from the DUT
+  //------------------------------------------------------------
+  task rx_data (output bit [127:0] rx_data, bit rx_type);
+     if (~dout_valid)
+       @(posedge dout_valid);
+     repeat(8)
+       begin
+          @(negedge clk);
+          rx_type   = dout_type;
+          rx_data   = {rx_data[111:0], dout_data};
+       end
+     msg_info($sformatf("Receiving type=%b, data=0x%h", rx_type, rx_data));
+  endtask
+   
   //------------------------------------------------------------
   // init_test
   // Called at the beginning of a test to initialize it.
@@ -161,7 +151,7 @@ module core_top_tb;
     error_count++;
     end_test();
   endtask
-  
+   
   //------------------------------------------------------------
   // end_test
   // Called at the end of a test to finish it.
