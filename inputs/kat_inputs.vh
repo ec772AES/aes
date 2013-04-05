@@ -1,6 +1,6 @@
-`define NUM_TESTS 155
+parameter NUM_TESTS=155;
 
-static bit [127:0] kat_key_vector [0:NUM_TESTS] = {
+static bit [127:0] kat_key_vector [0:NUM_TESTS] = '{
             128'h0000_0000_0000_0000_0000_0000_0000_0000,
 		    128'h0000_0000_0000_0000_0000_0000_0000_0000,
 			128'h0000_0000_0000_0000_0000_0000_0000_0000,
@@ -157,9 +157,9 @@ static bit [127:0] kat_key_vector [0:NUM_TESTS] = {
 	        128'hfffffffffffffffffffffffffffffffc,
 	        128'hfffffffffffffffffffffffffffffffe,
 	        128'hffffffffffffffffffffffffffffffff};
-					     
 
-static bit [127:0] kat_plain_vector [0:NUM_TESTS] = {
+
+static bit [127:0] kat_plain_vector [0:NUM_TESTS] = '{
            128'hf344_81ec_3cc6_27ba_cd5d_c3fb_08f2_73e6,
 		   128'h9798_c464_0bad_75c7_c322_7db9_1017_4e72,
 		   128'h96ab_5c2f_f612_d9df_aae8_c31f_30c4_2168,
@@ -316,9 +316,9 @@ static bit [127:0] kat_plain_vector [0:NUM_TESTS] = {
 		   128'h00000000000000000000000000000000,
 		   128'h00000000000000000000000000000000,
 		   128'h00000000000000000000000000000000};
-		   
 
-static bit [127:0] kat_cipher_vector [0:NUM_TESTS] = {
+
+static bit [127:0] kat_cipher_vector [0:NUM_TESTS] = '{
             128'h0336_763e_966d_9259_5a56_7cc9_ce53_7f5e,
 		    128'ha9a1_631b_f499_6954_ebc0_9395_7b23_4589,
 		    128'hff4f_8391_a6a4_0ca5_b25d_23be_dd44_a597,
@@ -475,4 +475,3 @@ static bit [127:0] kat_cipher_vector [0:NUM_TESTS] = {
 			128'h02bc96846b3fdc71643f384cd3cc3eaf,
 			128'h9ba4a9143f4e5d4048521c4f8877d88e,
 			128'ha1f6258c877d5fcd8964484538bfc92c};
-

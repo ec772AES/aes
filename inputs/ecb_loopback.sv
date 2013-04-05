@@ -2,7 +2,6 @@
 // ecb_loopback.sv
 // ECB Loopback
 //------------------------------------------------------------
-
 `include "kat_inputs.vh"
 
 initial
