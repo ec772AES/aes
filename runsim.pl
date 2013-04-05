@@ -80,8 +80,8 @@ foreach my $dir (@dirs) {
 }
 
 
-# Run the NC-Verilog command
-my $cmd = 'ncverilog +sv +nc64bit +define+USING_RUNSIM ';
+# Run the NC-Verilog command  +ncv200x    
+my $cmd = 'ncverilog +sv +nc64bit +define+USING_RUNSIM +incdir+../inputs/';
 foreach my $file (@files) {
   $cmd .= " $file";
 }
@@ -100,7 +100,6 @@ else {
 }
 
 print "\n---------------------------------------------------\n";
-
 
 
 
