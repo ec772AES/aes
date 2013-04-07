@@ -14,13 +14,14 @@ module enc_round_last
    );
 
   parameter       ADDRESS = 4'd0;
-  
+
   wire [127:0]    subbytes_2_shiftrows;
   wire [127:0]    shiftrows_2_addkey;
-   
+
    sub_bytes
      u_sub_bytes
        (.clk  (clk),
+        .rst  (rst),
         .din  (din),
         .dout (subbytes_2_shiftrows));
 
@@ -37,7 +38,6 @@ module enc_round_last
        .addr (addr),
        .din  (shiftrows_2_addkey),
        .dout (dout));
-  
-   
-endmodule
 
+
+endmodule

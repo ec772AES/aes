@@ -6,27 +6,280 @@
 module sbox
   (
    input            clk,
-   
-   input      [7:0] din,
+   input            rst,
+   input [7:0]      din,
    output reg [7:0] dout
    );
-  
-  
-   reg [7:0]        sbox [0:255];
 
 
-   // Initialize the Memory
-   `ifdef USING_RUNSIM
-   initial $readmemh("../rtl/sbox.dat", sbox);
-   `else
-   initial $readmemh("sbox.dat", sbox);
-   `endif
-   
+   reg [7:0]        din_r;
 
-   // Read Only Memory
    always @(posedge clk)
-     dout <= sbox[din];
-   
-   
-endmodule
+     if (rst)
+       din_r <= 0;
+     else
+       din_r <= din;
 
+   always @(*)
+     case (din_r)
+       8'd0:   dout = 8'h63;
+       8'd1:   dout = 8'h7c;
+       8'd2:   dout = 8'h77;
+       8'd3:   dout = 8'h7b;
+       8'd4:   dout = 8'hf2;
+       8'd5:   dout = 8'h6b;
+       8'd6:   dout = 8'h6f;
+       8'd7:   dout = 8'hc5;
+       8'd8:   dout = 8'h30;
+       8'd9:   dout = 8'h01;
+       8'd10:  dout = 8'h67;
+       8'd11:  dout = 8'h2b;
+       8'd12:  dout = 8'hfe;
+       8'd13:  dout = 8'hd7;
+       8'd14:  dout = 8'hab;
+       8'd15:  dout = 8'h76;
+       8'd16:  dout = 8'hca;
+       8'd17:  dout = 8'h82;
+       8'd18:  dout = 8'hc9;
+       8'd19:  dout = 8'h7d;
+       8'd20:  dout = 8'hfa;
+       8'd21:  dout = 8'h59;
+       8'd22:  dout = 8'h47;
+       8'd23:  dout = 8'hf0;
+       8'd24:  dout = 8'had;
+       8'd25:  dout = 8'hd4;
+       8'd26:  dout = 8'ha2;
+       8'd27:  dout = 8'haf;
+       8'd28:  dout = 8'h9c;
+       8'd29:  dout = 8'ha4;
+       8'd30:  dout = 8'h72;
+       8'd31:  dout = 8'hc0;
+       8'd32:  dout = 8'hb7;
+       8'd33:  dout = 8'hfd;
+       8'd34:  dout = 8'h93;
+       8'd35:  dout = 8'h26;
+       8'd36:  dout = 8'h36;
+       8'd37:  dout = 8'h3f;
+       8'd38:  dout = 8'hf7;
+       8'd39:  dout = 8'hcc;
+       8'd40:  dout = 8'h34;
+       8'd41:  dout = 8'ha5;
+       8'd42:  dout = 8'he5;
+       8'd43:  dout = 8'hf1;
+       8'd44:  dout = 8'h71;
+       8'd45:  dout = 8'hd8;
+       8'd46:  dout = 8'h31;
+       8'd47:  dout = 8'h15;
+       8'd48:  dout = 8'h04;
+       8'd49:  dout = 8'hc7;
+       8'd50:  dout = 8'h23;
+       8'd51:  dout = 8'hc3;
+       8'd52:  dout = 8'h18;
+       8'd53:  dout = 8'h96;
+       8'd54:  dout = 8'h05;
+       8'd55:  dout = 8'h9a;
+       8'd56:  dout = 8'h07;
+       8'd57:  dout = 8'h12;
+       8'd58:  dout = 8'h80;
+       8'd59:  dout = 8'he2;
+       8'd60:  dout = 8'heb;
+       8'd61:  dout = 8'h27;
+       8'd62:  dout = 8'hb2;
+       8'd63:  dout = 8'h75;
+       8'd64:  dout = 8'h09;
+       8'd65:  dout = 8'h83;
+       8'd66:  dout = 8'h2c;
+       8'd67:  dout = 8'h1a;
+       8'd68:  dout = 8'h1b;
+       8'd69:  dout = 8'h6e;
+       8'd70:  dout = 8'h5a;
+       8'd71:  dout = 8'ha0;
+       8'd72:  dout = 8'h52;
+       8'd73:  dout = 8'h3b;
+       8'd74:  dout = 8'hd6;
+       8'd75:  dout = 8'hb3;
+       8'd76:  dout = 8'h29;
+       8'd77:  dout = 8'he3;
+       8'd78:  dout = 8'h2f;
+       8'd79:  dout = 8'h84;
+       8'd80:  dout = 8'h53;
+       8'd81:  dout = 8'hd1;
+       8'd82:  dout = 8'h00;
+       8'd83:  dout = 8'hed;
+       8'd84:  dout = 8'h20;
+       8'd85:  dout = 8'hfc;
+       8'd86:  dout = 8'hb1;
+       8'd87:  dout = 8'h5b;
+       8'd88:  dout = 8'h6a;
+       8'd89:  dout = 8'hcb;
+       8'd90:  dout = 8'hbe;
+       8'd91:  dout = 8'h39;
+       8'd92:  dout = 8'h4a;
+       8'd93:  dout = 8'h4c;
+       8'd94:  dout = 8'h58;
+       8'd95:  dout = 8'hcf;
+       8'd96:  dout = 8'hd0;
+       8'd97:  dout = 8'hef;
+       8'd98:  dout = 8'haa;
+       8'd99:  dout = 8'hfb;
+       8'd100: dout = 8'h43;
+       8'd101: dout = 8'h4d;
+       8'd102: dout = 8'h33;
+       8'd103: dout = 8'h85;
+       8'd104: dout = 8'h45;
+       8'd105: dout = 8'hf9;
+       8'd106: dout = 8'h02;
+       8'd107: dout = 8'h7f;
+       8'd108: dout = 8'h50;
+       8'd109: dout = 8'h3c;
+       8'd110: dout = 8'h9f;
+       8'd111: dout = 8'ha8;
+       8'd112: dout = 8'h51;
+       8'd113: dout = 8'ha3;
+       8'd114: dout = 8'h40;
+       8'd115: dout = 8'h8f;
+       8'd116: dout = 8'h92;
+       8'd117: dout = 8'h9d;
+       8'd118: dout = 8'h38;
+       8'd119: dout = 8'hf5;
+       8'd120: dout = 8'hbc;
+       8'd121: dout = 8'hb6;
+       8'd122: dout = 8'hda;
+       8'd123: dout = 8'h21;
+       8'd124: dout = 8'h10;
+       8'd125: dout = 8'hff;
+       8'd126: dout = 8'hf3;
+       8'd127: dout = 8'hd2;
+       8'd128: dout = 8'hcd;
+       8'd129: dout = 8'h0c;
+       8'd130: dout = 8'h13;
+       8'd131: dout = 8'hec;
+       8'd132: dout = 8'h5f;
+       8'd133: dout = 8'h97;
+       8'd134: dout = 8'h44;
+       8'd135: dout = 8'h17;
+       8'd136: dout = 8'hc4;
+       8'd137: dout = 8'ha7;
+       8'd138: dout = 8'h7e;
+       8'd139: dout = 8'h3d;
+       8'd140: dout = 8'h64;
+       8'd141: dout = 8'h5d;
+       8'd142: dout = 8'h19;
+       8'd143: dout = 8'h73;
+       8'd144: dout = 8'h60;
+       8'd145: dout = 8'h81;
+       8'd146: dout = 8'h4f;
+       8'd147: dout = 8'hdc;
+       8'd148: dout = 8'h22;
+       8'd149: dout = 8'h2a;
+       8'd150: dout = 8'h90;
+       8'd151: dout = 8'h88;
+       8'd152: dout = 8'h46;
+       8'd153: dout = 8'hee;
+       8'd154: dout = 8'hb8;
+       8'd155: dout = 8'h14;
+       8'd156: dout = 8'hde;
+       8'd157: dout = 8'h5e;
+       8'd158: dout = 8'h0b;
+       8'd159: dout = 8'hdb;
+       8'd160: dout = 8'he0;
+       8'd161: dout = 8'h32;
+       8'd162: dout = 8'h3a;
+       8'd163: dout = 8'h0a;
+       8'd164: dout = 8'h49;
+       8'd165: dout = 8'h06;
+       8'd166: dout = 8'h24;
+       8'd167: dout = 8'h5c;
+       8'd168: dout = 8'hc2;
+       8'd169: dout = 8'hd3;
+       8'd170: dout = 8'hac;
+       8'd171: dout = 8'h62;
+       8'd172: dout = 8'h91;
+       8'd173: dout = 8'h95;
+       8'd174: dout = 8'he4;
+       8'd175: dout = 8'h79;
+       8'd176: dout = 8'he7;
+       8'd177: dout = 8'hc8;
+       8'd178: dout = 8'h37;
+       8'd179: dout = 8'h6d;
+       8'd180: dout = 8'h8d;
+       8'd181: dout = 8'hd5;
+       8'd182: dout = 8'h4e;
+       8'd183: dout = 8'ha9;
+       8'd184: dout = 8'h6c;
+       8'd185: dout = 8'h56;
+       8'd186: dout = 8'hf4;
+       8'd187: dout = 8'hea;
+       8'd188: dout = 8'h65;
+       8'd189: dout = 8'h7a;
+       8'd190: dout = 8'hae;
+       8'd191: dout = 8'h08;
+       8'd192: dout = 8'hba;
+       8'd193: dout = 8'h78;
+       8'd194: dout = 8'h25;
+       8'd195: dout = 8'h2e;
+       8'd196: dout = 8'h1c;
+       8'd197: dout = 8'ha6;
+       8'd198: dout = 8'hb4;
+       8'd199: dout = 8'hc6;
+       8'd200: dout = 8'he8;
+       8'd201: dout = 8'hdd;
+       8'd202: dout = 8'h74;
+       8'd203: dout = 8'h1f;
+       8'd204: dout = 8'h4b;
+       8'd205: dout = 8'hbd;
+       8'd206: dout = 8'h8b;
+       8'd207: dout = 8'h8a;
+       8'd208: dout = 8'h70;
+       8'd209: dout = 8'h3e;
+       8'd210: dout = 8'hb5;
+       8'd211: dout = 8'h66;
+       8'd212: dout = 8'h48;
+       8'd213: dout = 8'h03;
+       8'd214: dout = 8'hf6;
+       8'd215: dout = 8'h0e;
+       8'd216: dout = 8'h61;
+       8'd217: dout = 8'h35;
+       8'd218: dout = 8'h57;
+       8'd219: dout = 8'hb9;
+       8'd220: dout = 8'h86;
+       8'd221: dout = 8'hc1;
+       8'd222: dout = 8'h1d;
+       8'd223: dout = 8'h9e;
+       8'd224: dout = 8'he1;
+       8'd225: dout = 8'hf8;
+       8'd226: dout = 8'h98;
+       8'd227: dout = 8'h11;
+       8'd228: dout = 8'h69;
+       8'd229: dout = 8'hd9;
+       8'd230: dout = 8'h8e;
+       8'd231: dout = 8'h94;
+       8'd232: dout = 8'h9b;
+       8'd233: dout = 8'h1e;
+       8'd234: dout = 8'h87;
+       8'd235: dout = 8'he9;
+       8'd236: dout = 8'hce;
+       8'd237: dout = 8'h55;
+       8'd238: dout = 8'h28;
+       8'd239: dout = 8'hdf;
+       8'd240: dout = 8'h8c;
+       8'd241: dout = 8'ha1;
+       8'd242: dout = 8'h89;
+       8'd243: dout = 8'h0d;
+       8'd244: dout = 8'hbf;
+       8'd245: dout = 8'he6;
+       8'd246: dout = 8'h42;
+       8'd247: dout = 8'h68;
+       8'd248: dout = 8'h41;
+       8'd249: dout = 8'h99;
+       8'd250: dout = 8'h2d;
+       8'd251: dout = 8'h0f;
+       8'd252: dout = 8'hb0;
+       8'd253: dout = 8'h54;
+       8'd254: dout = 8'hbb;
+       8'd255: dout = 8'h16;
+     endcase
+
+
+
+endmodule

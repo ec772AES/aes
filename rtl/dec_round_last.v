@@ -17,10 +17,11 @@ module dec_round_last
 
   wire [127:0]    subbytes_2_shiftrows;
   wire [127:0]    shiftrows_2_addkey;
-   
+
    inv_sub_bytes
      u_inv_sub_bytes
        (.clk  (clk),
+        .rst 	(rst),
         .din  (din),
         .dout (subbytes_2_shiftrows));
 
@@ -37,7 +38,6 @@ module dec_round_last
        .addr (addr),
        .din  (shiftrows_2_addkey),
        .dout (dout));
-  
-   
-endmodule
 
+
+endmodule

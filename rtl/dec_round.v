@@ -18,10 +18,11 @@ module dec_round
   wire [127:0]    subbytes_2_shiftrows;
   wire [127:0]    shiftrows_2_addkey;
   wire [127:0]    addkey_2_mixcols;
-   
+
   inv_sub_bytes
     u_inv_sub_bytes
       (.clk  (clk),
+       .rst  (rst),
        .din  (din),
        .dout (subbytes_2_shiftrows));
 
@@ -38,12 +39,11 @@ module dec_round
        .addr (addr),
        .din  (shiftrows_2_addkey),
        .dout (addkey_2_mixcols));
-   
+
   inv_mix_cols
     u_inv_mix_cols
       (.din  (addkey_2_mixcols),
        .dout (dout));
-  
-   
-endmodule
 
+
+endmodule

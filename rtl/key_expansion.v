@@ -33,7 +33,7 @@ module key_expansion(
         wire [3:0]  rcon_addr;
         wire [31:0] rcon_out;
         reg load_enable;
-        
+
         /* note that rcon_addr is not always key_addr - 1 */
         assign rcon_addr = key_addr;
 
@@ -110,6 +110,7 @@ module key_expansion(
 
         rcon u_rcon(
                     .clk(clk),
+                    .rst(rst),
                     .addr(rcon_addr),
                     .dout(rcon_out));
 
