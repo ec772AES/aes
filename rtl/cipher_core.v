@@ -98,9 +98,9 @@ module cipher_core
       else
         case (tin)
           TYPE_IN_ENC,
-          TYPE_IN_DEC: crypto_din = din;
-          TYPE_IN_KEY: crypto_din = 128'd0;
-          TYPE_IN_IV : crypto_din = 128'd0;
+          TYPE_IN_DEC: ctrl_din = din;
+          TYPE_IN_KEY: ctrl_din = 128'd0;
+          TYPE_IN_IV : ctrl_din = 128'd0;
         endcase
 
       // Control Pipeline Type
@@ -108,7 +108,7 @@ module cipher_core
 
       // Control Pipeline Valid
       if (crypto_ready)
-        ctrl_vin = vin;
+        ctrl_vin = vin & ~tin[1];
       else
         ctrl_vin = 1'b0;
       

@@ -27,7 +27,7 @@ GetOptions ('help'     => \$help,
 if ($help or ((!defined $sim) and (!defined $synth)) ) {
   print "
 USAGE
-      runsim.pl -stim <FILE>
+      runsim.pl -sim <FILE>
 
 OPTIONS
       -tb   <FILE>         Testbench to run.
@@ -129,9 +129,9 @@ my $cmdSynth = 'rc < synth.tcl';
 # $cmdSynth .= 'exit'; # done
 
 if (defined $synth) {
-	system("cp ../synth.tcl synth.tcl");
-	print "rc synthesis using nangate technology!\n";
-	system($cmdSynth);
+    system("cp ../synth.tcl synth.tcl");
+    print "rc synthesis using nangate technology!\n";
+    system($cmdSynth);
 }
 
 
@@ -141,7 +141,7 @@ if (defined $synth) {
 
 if (defined $simnet) {
   my $cmdVerilog = 'ncverilog +sv +nc64bit +define+USING_RUNSIM +incdir+../inputs/';
-	$cmdVerilog .= ' core_top_netlist.v';
+    $cmdVerilog .= ' core_top_netlist.v';
   $waves = 1 if (defined $gui);
   #$cmdVerilog .= ' -clean'                       if (defined $clean);
   $cmdVerilog .= ' +define+DUMP_WAVES +access+r' if (defined $waves);

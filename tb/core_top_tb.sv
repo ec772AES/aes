@@ -93,11 +93,14 @@ module core_top_tb;
   // Get data from the DUT
   //------------------------------------------------------------
   task rx_data (output bit [127:0] rx_data, bit rx_type);
-     if (~dout_valid)
-       @(posedge dout_valid);
      repeat(8)
        begin
           @(negedge clk);
+          while (~dout_valid)
+            begin
+               @(posedge dout_valid);
+               @(negedge clk);
+            end
           rx_type   = dout_type;
           rx_data   = {rx_data[111:0], dout_data};
        end
