@@ -11,7 +11,7 @@ set hdl_search_path ../rtl
 
 # The library setup is kept in a separate tcl file which we now source
 
-set_attribute library /ad/eng/courses/ec/ec772/Spring2011/Nangate/NangateOpenCellLibrary_PDKv1_3_v2009_07/liberty/NangateOpenCellLibrary_typical_conditional_ccs.lib
+set_attribute library  ../../NangateOpenCellLibrary_typical_ccs.lib
 
 # These two commands read in your verilog source and elaborate it
 read_hdl {../rtl/add_rkey.v ../rtl/cipher_core.v ../rtl/convert_aes_block.v ../rtl/core_top.v ../rtl/ctrl_pipeline.v ../rtl/dec_pipeline.v ../rtl/dec_round.v ../rtl/dec_round_last.v ../rtl/enc_pipeline.v ../rtl/enc_round.v ../rtl/enc_round_last.v ../rtl/gf_mul2.v ../rtl/inv_mix_bytes.v ../rtl/inv_mix_cols.v ../rtl/inv_sbox.v ../rtl/inv_shift_rows.v ../rtl/inv_sub_bytes.v ../rtl/key_expansion.v ../rtl/key_expansion_logic.v ../rtl/mix_bytes.v ../rtl/mix_cols.v ../rtl/rcon.v ../rtl/sbox.v ../rtl/shift_rows.v ../rtl/stream_in.v ../rtl/stream_out.v ../rtl/sub_bytes.v} -top ../rtl/core_top.v -sv
@@ -37,7 +37,7 @@ synthesize -to_mapped -effort medium
 
 # We write out the results as a verilog netlist
 
-write -mapped > synthesized.v
+write -mapped > core_top_netlist.v
 
 # We create a timing report for the worst case timing path,
 # an area report for each reference in the heirachy and a DRC report

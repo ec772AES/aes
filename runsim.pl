@@ -24,7 +24,7 @@ GetOptions ('help'     => \$help,
             'waves'    => \$waves,
             'gui'      => \$gui);
 
-if ($help or ((!defined $sim) and (!defined $synth)) ) {
+if ($help or ((!defined $sim) and (!defined $synth) and (!defined $simnet)) ) {
   print "
 USAGE
       runsim.pl -sim <FILE>
@@ -60,7 +60,7 @@ die "ERROR: Must run from 'tmp' directory!" if (basename($cwd) ne 'tmp');
 
 
 # Copy the stim file to the tmp dir
-if (defined $sim) {
+if (defined $sim or $simnet) {
   die "ERROR: No tb ($tb) exists!"     if (!-e $tb);
   die "ERROR: No stim ($stim) exists!" if (!-e $stim);
   system("cp $stim stim.v");
@@ -141,7 +141,8 @@ if (defined $synth) {
 
 if (defined $simnet) {
   my $cmdVerilog = 'ncverilog +sv +nc64bit +define+USING_RUNSIM +incdir+../inputs/';
-    $cmdVerilog .= ' core_top_netlist.v';
+  $cmdVerilog .= " $tb";
+  $cmdVerilog .= ' core_top_netlist.v ../../NangateOpenCellLibrary.v';
   $waves = 1 if (defined $gui);
   #$cmdVerilog .= ' -clean'                       if (defined $clean);
   $cmdVerilog .= ' +define+DUMP_WAVES +access+r' if (defined $waves);
@@ -155,5 +156,4 @@ if (defined $simnet) {
 
 
 print "\n---------------------------------------------------\n";
-
 
