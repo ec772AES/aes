@@ -12,7 +12,7 @@ module core_top
    input          data_in_valid,
    input [1:0]    data_in_type,
    input [15:0]   data_in,
-   
+
    // Stream Out IF
    output         data_out_valid,
    output         data_out_type,
@@ -27,11 +27,11 @@ module core_top
   wire         stream_in_valid, stream_out_valid;
   wire [1:0]   stream_in_type;
   wire         stream_out_type;
-  
+
   wire         keyed;
   wire [3:0]   key_addr;
   wire [127:0] key;
-  
+
   stream_in
     u_stream_in
       (.clk  (clk),
@@ -58,7 +58,7 @@ module core_top
        .rkey  (key),
        .crypto_mode  (crypto_mode),
        .crypto_ready (crypto_ready));
-  
+
   key_expansion
     u_key_expansion
       (.clk          (clk),
@@ -80,7 +80,6 @@ module core_top
        .vout (data_out_valid),
        .tout (data_out_type),
        .dout (data_out));
-  
-  
-endmodule
 
+
+endmodule

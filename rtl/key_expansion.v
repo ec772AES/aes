@@ -38,7 +38,7 @@ module key_expansion(
         assign rcon_addr = key_addr;
 
         /* shift to next state allow for async reset */
-        always @(posedge clk or posedge rst)
+        always @(posedge clk)
           if (rst)
             state <= READY;
           else begin

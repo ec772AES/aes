@@ -19,7 +19,7 @@ module core_top_tb;
   // TB signals
   int warning_count;
   int error_count;
-  
+
 
   // Default signals and generate a clock
   initial
@@ -35,7 +35,13 @@ module core_top_tb;
         #1 clk = ~clk;
     end
 
-  
+	initial
+		begin
+			#50000
+				$finish;
+		end
+		
+
   // Conditionally dump waves when needed
   `ifdef DUMP_WAVES
   initial
@@ -46,7 +52,7 @@ module core_top_tb;
       $stop;
     end
   `endif
-  
+
 
   // Include the test file
   `include "stim.v"
@@ -106,7 +112,7 @@ module core_top_tb;
        end
      msg_info($sformatf("Receiving type=%b, data=0x%h", rx_type, rx_data));
   endtask
-   
+
   //------------------------------------------------------------
   // init_test
   // Called at the beginning of a test to initialize it.
@@ -154,7 +160,7 @@ module core_top_tb;
     error_count++;
     end_test();
   endtask
-   
+
   //------------------------------------------------------------
   // end_test
   // Called at the end of a test to finish it.
@@ -187,5 +193,5 @@ module core_top_tb;
     $display("------------------------------------------------------------");
     $finish;
   endtask
-  
+
 endmodule
