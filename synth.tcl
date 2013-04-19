@@ -24,7 +24,7 @@ check_design > synth_check_design.rpt
 
 # We now load in the constraints file
 
-set clk_input [define_clock -period 3000 -name clk_input clk]
+set clk_input [define_clock -period 5000 -name clk_input clk]
 external_delay -input 0 -clock $clk_input -name in_con [find /des* -port ports_in/*]
 external_delay -output 0 -clock $clk_input -name out_con [find /des* -port ports_out/*]
 
