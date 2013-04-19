@@ -32,11 +32,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+//#include <time.h>
+#include <sys/time.h>		// get time of day
+#include <sys/times.h>		// get time of day
 
 #include "rijndael-api-fst.h"
 
 #define SUBMITTER "Joan Daemen"
+
+inline double usecs_of_timeval(struct timeval * p_tv)
+{
+    return((double) p_tv->tv_sec) * 1e6 + ((double) p_tv->tv_usec);
+}
 
 static void blockPrint(FILE *fp, const BYTE *block, const char *tag) {
 	int i;
@@ -107,7 +114,7 @@ static void rijndaelVKKAT(FILE *fp, int keyLength) {
 		/*	(byteVal == '1') */	'8';
 	}
 	assert(byteVal == (BYTE)'8');
-	
+
 #ifdef TRACE_KAT_MCT
 	printf(" done.\n");
 #endif /* ?TRACE_KAT_MCT */
@@ -172,16 +179,16 @@ static void rijndaelTKAT(FILE *fp, int keyLength, FILE *in) {
 	fflush(fp);
 
 	memset(keyMaterial, 0, sizeof (keyMaterial));
-	
+
 	for (i = 0; i < 64; i++) {
 		fprintf(fp, "\nI=%d\n", i+1);
 		for(j = 0; j < keyLength/4; j++) {
 			fscanf(in, "%c", &keyMaterial[j]);
 		}
 		makeKey(&keyInst, DIR_ENCRYPT, keyLength, keyMaterial);
-		
+
 		fprintf(fp, "KEY=%s\n", keyMaterial);
-		
+
 		for (j = 0; j < 16; j++) {
 			fscanf(in, "%02x", &s);
 			block[j] = s;
@@ -199,9 +206,9 @@ static void rijndaelTKAT(FILE *fp, int keyLength, FILE *in) {
 			fscanf(in, "%c", &keyMaterial[j]);
 		}
 		makeKey(&keyInst, DIR_DECRYPT, keyLength, keyMaterial);
-		
+
 		fprintf(fp, "KEY=%s\n", keyMaterial);
-		
+
 		for (j = 0; j < 16; j++) {
 			fscanf(in, "%02x", &s);
 			block[j] = s;
@@ -244,11 +251,11 @@ static void rijndaelIVKAT (FILE *fp, int keyLength) {
 		sprintf(&keyMaterial[2*i], "%02X", i);
 	}
 	fprintf(fp, "KEY=%s\n", keyMaterial);
-	
+
 	for (i = 0; i < 16; i++) {
 		pt[i] = i;
 	}
-	
+
 	fprintf(fp, "\nIntermediate Ciphertext Values (Encryption)\n\n");
 	makeKey(&keyInst, DIR_ENCRYPT, keyLength, keyMaterial);
 	blockPrint(fp, pt, "PT");
@@ -260,7 +267,7 @@ static void rijndaelIVKAT (FILE *fp, int keyLength) {
 	}
 	cipherUpdateRounds(&cipherInst, &keyInst, pt, 16, ct, keyInst.Nr);
 	blockPrint(fp, ct, "CT");
-	
+
 	fprintf(fp, "\nIntermediate Ciphertext Values (Decryption)\n\n");
 	makeKey(&keyInst, DIR_DECRYPT, keyLength, keyMaterial);
 	blockPrint(fp, ct, "CT");
@@ -272,10 +279,10 @@ static void rijndaelIVKAT (FILE *fp, int keyLength) {
 	}
 	cipherUpdateRounds(&cipherInst, &keyInst, ct, 16, pt, keyInst.Nr);
 	blockPrint(fp, pt, "PT");
-	
+
 #ifdef TRACE_KAT_MCT
 	printf(" done.\n");
-#endif 
+#endif
 }
 #endif /* INTERMEDIATE_VALUE_KAT */
 
@@ -369,7 +376,7 @@ static void makeKATs(const char *vkFile, const char *vtFile, const char *tblFile
 	} else {
 		printf("Table Known Answer test expects file table.192\n");
 		fclose(fp);
-		exit(EXIT_FAILURE);		
+		exit(EXIT_FAILURE);
 	}
 	if (NULL != (fp2 = fopen("table.256", "r"))) {
 		rijndaelTKAT(fp, 256, fp2);
@@ -379,7 +386,7 @@ static void makeKATs(const char *vkFile, const char *vtFile, const char *tblFile
 		fclose(fp);
 		exit(EXIT_FAILURE);
 	}
-	
+
 	fprintf(fp,
 		"\n"
 		"==========");
@@ -436,12 +443,12 @@ static void rijndaelECB_MCT(FILE *fp, int keyLength, BYTE direction) {
 	memset(outBlock, 0, 16);
 	memset(binKey, 0, keyLength/8);
 	for (i = 0; i < 400; i++) {
-#ifdef TRACE_KAT_MCT                 
+#ifdef TRACE_KAT_MCT
         while (width-- > 0) {
         	putchar('\b');
         }
         width = printf("%d", i);
-        fflush(stdout);    
+        fflush(stdout);
 #endif /* ?TRACE_KAT_MCT */
 		fprintf(fp, "\nI=%d\n", i);
 		/* prepare key: */
@@ -525,12 +532,12 @@ static void rijndaelCBC_MCT(FILE *fp, int keyLength, BYTE direction) {
 	memset(inBlock, 0, 16);
 	memset(binKey, 0, keyLength/8);
 	for (i = 0; i < 400; i++) {
-#ifdef TRACE_KAT_MCT                 
+#ifdef TRACE_KAT_MCT
         while (width-- > 0) {
         	putchar('\b');
         }
         width = printf("%d", i);
-        fflush(stdout);    
+        fflush(stdout);
 #endif /* ?TRACE_KAT_MCT */
 		fprintf (fp, "\nI=%d\n", i);
 		/* prepare key: */
@@ -736,7 +743,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 #ifdef TRACE_KAT_MCT
 	printf("Generating FIPS test vectors...");
 #endif /* ?TRACE_KAT_MCT */
-	
+
 	fp = fopen(fipsFile, "w");
 	fprintf(fp,
 		"\n"
@@ -751,7 +758,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 	for (i = 0; i < keyLength/8; i++) {
 		sprintf(&keyMaterial[2*i], "%02X", i);
 	}
-	
+
 	fprintf(fp, "\n================================\n\n");
 	fprintf(fp, "KEYSIZE=128\n\n");
     fprintf(fp, "KEY=%s\n\n", keyMaterial);
@@ -761,7 +768,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 		pt[i] = (i << 4) | i;
 	}
 
-    /* encryption: */	
+    /* encryption: */
 	makeKey(&keyInst, DIR_ENCRYPT, keyLength, keyMaterial);
 	cipherInit(&cipherInst, MODE_ECB, NULL);
 	fprintf(fp, "Round Subkey Values (Encryption)\n\n");
@@ -782,8 +789,8 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 	}
 	cipherUpdateRounds(&cipherInst, &keyInst, pt, 16, ct, keyInst.Nr);
 	blockPrint(fp, ct, "CT");
-	
-    /* decryption: */	
+
+    /* decryption: */
 	makeKey(&keyInst, DIR_DECRYPT, keyLength, keyMaterial);
 	cipherInit(&cipherInst, MODE_ECB, NULL);
 	fprintf(fp, "\nRound Subkey Values (Decryption)\n\n");
@@ -811,7 +818,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 	for (i = 0; i < keyLength/8; i++) {
 		sprintf(&keyMaterial[2*i], "%02X", i);
 	}
-	
+
 	fprintf(fp, "\n================================\n\n");
 	fprintf(fp, "KEYSIZE=192\n\n");
     fprintf(fp, "KEY=%s\n\n", keyMaterial);
@@ -821,7 +828,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 		pt[i] = (i << 4) | i;
 	}
 
-    /* encryption: */	
+    /* encryption: */
 	makeKey(&keyInst, DIR_ENCRYPT, keyLength, keyMaterial);
 	cipherInit(&cipherInst, MODE_ECB, NULL);
 	fprintf(fp, "\nRound Subkey Values (Encryption)\n\n");
@@ -842,8 +849,8 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 	}
 	cipherUpdateRounds(&cipherInst, &keyInst, pt, 16, ct, keyInst.Nr);
 	blockPrint(fp, ct, "CT");
-	
-    /* decryption: */	
+
+    /* decryption: */
 	makeKey(&keyInst, DIR_DECRYPT, keyLength, keyMaterial);
 	cipherInit(&cipherInst, MODE_ECB, NULL);
 	fprintf(fp, "\nRound Subkey Values (Decryption)\n\n");
@@ -871,7 +878,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 	for (i = 0; i < keyLength/8; i++) {
 		sprintf(&keyMaterial[2*i], "%02X", i);
 	}
-	
+
 	fprintf(fp, "\n================================\n\n");
 	fprintf(fp, "KEYSIZE=256\n\n");
     fprintf(fp, "KEY=%s\n\n", keyMaterial);
@@ -881,7 +888,7 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 		pt[i] = (i << 4) | i;
 	}
 
-    /* encryption: */	
+    /* encryption: */
 	makeKey(&keyInst, DIR_ENCRYPT, keyLength, keyMaterial);
 	cipherInit(&cipherInst, MODE_ECB, NULL);
 	fprintf(fp, "\nRound Subkey Values (Encryption)\n\n");
@@ -902,8 +909,8 @@ static void makeFIPSTestVectors(const char *fipsFile) {
 	}
 	cipherUpdateRounds(&cipherInst, &keyInst, pt, 16, ct, keyInst.Nr);
 	blockPrint(fp, ct, "CT");
-	
-    /* decryption: */	
+
+    /* decryption: */
 	makeKey(&keyInst, DIR_DECRYPT, keyLength, keyMaterial);
 	cipherInit(&cipherInst, MODE_ECB, NULL);
 	fprintf(fp, "\nRound Subkey Values (Decryption)\n\n");
@@ -938,8 +945,9 @@ void rijndaelSpeed(int keyBits) {
 	int Nr, i;
 	u32 rk[4*(MAXNR + 1)];
 	u8 cipherKey[256/8], pt[16], ct[16];
-	clock_t elapsed;
-	float sec;
+	//clock_t elapsed;
+	struct timeval tv_start, tv_stop;
+	double sec;
 
 	memset(cipherKey, 0, sizeof(cipherKey));
 	printf("================================\n");
@@ -948,61 +956,81 @@ void rijndaelSpeed(int keyBits) {
 	/*
 	 * Encryption key setup timing:
 	 */
-	elapsed = -clock();
+	//elapsed = -clock();
+	gettimeofday(&tv_start,NULL);
 	for (i = 0; i < ITERATIONS; i++) {
 		Nr = rijndaelKeySetupEnc(rk, cipherKey, keyBits);
 	}
-	elapsed += clock();
-	sec = (float)elapsed/CLOCKS_PER_SEC;
-	printf("Encryption key schedule: %.1f s, %.0f Mbit/s\n",
-		sec, (float)ITERATIONS*128/sec/1000000);
+	//elapsed += clock();
+	gettimeofday(&tv_stop,NULL);
+	sec = (usecs_of_timeval(&tv_stop) - usecs_of_timeval(&tv_start))/1000000;
+	//sec = (float)elapsed/CLOCKS_PER_SEC;
+	printf("Encryption key schedule: %5.0f ms, %.0f Mbit/s\n",
+		sec*1000, (float)ITERATIONS*128/sec/1000000);
 
 	/*
 	 * Encryption timing:
 	 */
-	elapsed = -clock();
+	//elapsed = -clock();
+	gettimeofday(&tv_start,NULL);
 	for (i = 0; i < ITERATIONS; i++) {
 		rijndaelEncrypt(rk, Nr, pt, ct);
 	}
-	elapsed += clock();
-	sec = (float)elapsed/CLOCKS_PER_SEC;
-	printf("Encryption: %.1f s, %.0f Mbit/s\n",
-		sec, (float)ITERATIONS*128/sec/1000000);
+	//elapsed += clock();
+	gettimeofday(&tv_stop,NULL);
+	sec = (usecs_of_timeval(&tv_stop) - usecs_of_timeval(&tv_start))/1000000;
+	//sec = (float)elapsed/CLOCKS_PER_SEC;
+	printf("Encryption: %5.0f ms, %5.1f Mbit/s\n",
+		sec*1000, (float)ITERATIONS*128/sec/1000000);
 
 	/*
 	 * Decryption key setup timing:
 	 */
-	elapsed = -clock();
+	//elapsed = -clock();
+	gettimeofday(&tv_start,NULL);
 	for (i = 0; i < ITERATIONS; i++) {
 		Nr = rijndaelKeySetupDec(rk, cipherKey, keyBits);
 	}
-	elapsed += clock();
-	sec = (float)elapsed/CLOCKS_PER_SEC;
-	printf("Decryption key schedule: %.1f s, %.0f Mbit/s\n",
-		sec, (float)ITERATIONS*128/sec/1000000);
+	//elapsed += clock();
+	gettimeofday(&tv_stop,NULL);
+	//sec = (float)elapsed/CLOCKS_PER_SEC;
+	sec = (usecs_of_timeval(&tv_stop) - usecs_of_timeval(&tv_start))/1000000;
+	printf("Decryption key schedule: %5.0f ms, %.0f Mbit/s\n",
+		sec*1000, (float)ITERATIONS*128/sec/1000000);
 
 	/*
 	 * Decryption timing:
 	 */
-	elapsed = -clock();
+	//elapsed = -clock();
+	gettimeofday(&tv_start,NULL);
 	for (i = 0; i < ITERATIONS; i++) {
 		rijndaelDecrypt(rk, Nr, pt, ct);
 	}
-	elapsed += clock();
-	sec = (float)elapsed/CLOCKS_PER_SEC;
-	printf("Decryption: %.1f s, %.0f Mbit/s\n",
-		sec, (float)ITERATIONS*128/sec/1000000);
+	//elapsed += clock();
+	gettimeofday(&tv_stop,NULL);
+	//sec = (float)elapsed/CLOCKS_PER_SEC;
+	sec = (usecs_of_timeval(&tv_stop) - usecs_of_timeval(&tv_start))/1000000;
+	printf("Decryption: %5.0f ms, %.0f Mbit/s\n",
+		sec*1000, (float)ITERATIONS*128/sec/1000000);
 
 }
 
 int main(void) {
 	makeFIPSTestVectors("fips-test-vectors.txt");
 	makeKATs("ecb_vk.txt", "ecb_vt.txt", "ecb_tbl.txt", "ecb_iv.txt");
-	makeMCTs("ecb_e_m.txt", "ecb_d_m.txt", "cbc_e_m.txt", "cbc_d_m.txt");
-	/*
-	rijndaelSpeed(128);
-	rijndaelSpeed(192);
-	rijndaelSpeed(256);
-	*/
+	makeMCTs("ecb_e_m.txt", "ecb_d_m.txt", "cbc_e_m.txt", "cbc_d_m.txt");
+
+
+
+	rijndaelSpeed(128);
+	
+	/*
+
+	rijndaelSpeed(192);
+
+	rijndaelSpeed(256);
+
+	*/
+
 	return 0;
 }

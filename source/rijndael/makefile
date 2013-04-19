@@ -1,7 +1,17 @@
 # Example Makefile for the optimised ANSI C Rijndael code
-# v3.0 
+# v3.0
 
-CFLAGS=-Wall -O2 -DTRACE_KAT_MCT -DINTERMEDIATE_VALUE_KAT
+# Gnu compiler
+CC=gcc
+# Compiler flags
+CFLAGS=-O2 -DINTERMEDIATE_VALUE_KAT -DFULL_UNROLL
+# Flags for code, use -DTRACE_KAT_MCT print status info
+LDFLAGS=
+SOURCES=rijndael-alg-fst.c rijndael-api-fst.c rijndael-test-fst.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=rijndael-test-fst
+# call make rijndael-test-fst
+$(EXECUTABLE):	$(OBJECTS)
 
-rijndael-test-fst:	rijndael-test-fst.o rijndael-api-fst.o rijndael-alg-fst.o
-
+clean:
+	rm -rf *o rijndael-test-fst
