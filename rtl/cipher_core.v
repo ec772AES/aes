@@ -25,7 +25,7 @@ module cipher_core
 
    // Core Top IF
    input           crypto_mode,
-   output reg      crypto_ready
+   output          crypto_ready
    );
 
   
@@ -53,93 +53,99 @@ module cipher_core
   reg [127:0] iv_dec;
   
   reg         crypto_mode_r;
+  reg  				crypto_ready_r;
+ 
 
-  
-  // --- Cipher Controller ---
-  // Register the crypto_mode and crypto_ready
+	assign crypto_ready = crypto_ready_r;
+
   always @(posedge clk)
-    if (rst)
-      begin
-        crypto_mode_r <= 1'b0;
-        crypto_ready  <= 1'b0;
-      end
-    else
-      if (~crypto_ready & keyed)
-        begin
-          crypto_mode_r <= crypto_mode;
-          crypto_ready  <= 1'b1;
-        end
-      else
-        begin
-          crypto_mode_r <= crypto_mode_r;
-          crypto_ready  <= crypto_ready;
-        end
-
+	begin
+			crypto_mode_r 	<= (rst) ? 0 : ((crypto_ready == 0) && (keyed == 1)) ? crypto_mode 	: crypto_mode_r;
+			crypto_ready_r 	<= (rst) ? 0 : (keyed == 1) 												 ? 1'b1					:	crypto_ready_r;
+	end
 
   // --- Cipher Data In Controller ---
   // Select valid, type, & data for the pipelines
-  always @(*)
-    begin
-
+  always @(posedge clk)
+  begin
+		if(rst)
+		begin
+			crypto_din <= 0;
+			ctrl_din <= 0;
+			ctrl_tin <= 0;
+			ctrl_vin <= 0;
+		end
+		else
+		begin
       // Crypto Pipelines
       if (crypto_mode_r == MODE_ECB)
-        crypto_din = din;
-      else
+        crypto_din <= din;
+			else begin
         case (tin)
-          TYPE_IN_ENC: crypto_din = iv_enc;
-          TYPE_IN_DEC: crypto_din = iv_dec;
-          TYPE_IN_KEY: crypto_din = 128'd0;
-          TYPE_IN_IV : crypto_din = 128'd0;
+          TYPE_IN_ENC: crypto_din <= iv_enc;
+          TYPE_IN_DEC: crypto_din <= iv_dec;
+          TYPE_IN_KEY: crypto_din <= 128'd0;
+          TYPE_IN_IV : crypto_din <= 128'd0;
         endcase
+			end
 
       // Control Pipeline Data
       if (crypto_mode_r == MODE_ECB)
-        ctrl_din = 128'h0;
-      else
+        ctrl_din <= 128'h0;
+			else begin
         case (tin)
           TYPE_IN_ENC,
-          TYPE_IN_DEC: ctrl_din = din;
-          TYPE_IN_KEY: ctrl_din = 128'd0;
-          TYPE_IN_IV : ctrl_din = 128'd0;
+          TYPE_IN_DEC: ctrl_din <= din;
+          TYPE_IN_KEY: ctrl_din <= 128'd0;
+          TYPE_IN_IV : ctrl_din <= 128'd0;
         endcase
+			end
 
       // Control Pipeline Type
-      ctrl_tin = tin[0];
+      ctrl_tin <= tin[0];
 
       // Control Pipeline Valid
-      if (crypto_ready)
-        ctrl_vin = vin & ~tin[1];
+      if (crypto_ready_r)
+        ctrl_vin <= vin & ~tin[1];
       else
-        ctrl_vin = 1'b0;
+        ctrl_vin <= 1'b0;
       
-    end
+		end //end rst else
+	end //end always
 
   // Register the Encrypt Initialization Vector
   always @(posedge clk)
-    if (rst)
+	begin
+		if (rst)
       iv_enc <= 128'd0;
-    else
+		else begin
       if (vin & (tin == TYPE_IN_IV))
         iv_enc <= din;
-      else
+			else begin
         if (vin & (tin == TYPE_IN_ENC))
           iv_enc <= iv_enc + 128'd1;
         else
           iv_enc <= iv_enc;
+			end
+		end
+  end //end always
 
   // Register the Decrypt Initialization Vector
   always @(posedge clk)
-    if (rst)
+	begin
+		if (rst)
       iv_dec <= 128'd0;
-    else
+		else begin
       if (vin & (tin == TYPE_IN_IV))
         iv_dec <= din;
-      else
+			else begin
         if (vin & (tin == TYPE_IN_DEC))
           iv_dec <= iv_dec + 128'd1;
         else
           iv_dec <= iv_dec;
-  
+			end
+		end
+	end
 
   // --- Pipelines ---
   // Instanciate the encrypt, decrypt, & control pipelines
@@ -176,7 +182,8 @@ module cipher_core
   // --- Cipher Data Out Controller ---
   // Register the Type, Valid, and Data Out
   always @(posedge clk)
-    if (rst)
+	begin
+		if (rst)
       begin
          tout <= 0;
          vout <= 0;
@@ -187,17 +194,18 @@ module cipher_core
          tout <= ctrl_tout;
          vout <= ctrl_vout;
          
-         if (ctrl_vout)
-           if (crypto_mode_r == MODE_ECB)
+				 if (ctrl_vout) begin
+					 if (crypto_mode_r == MODE_ECB) begin
              if (ctrl_tout == TYPE_OUT_ENC)
                dout <= enc_dout;
              else // ECB, DEC
                dout <= dec_dout;
+					 end
            else // CTR, ENC/DEC
              dout <= enc_dout ^ ctrl_dout;
-         else
+				 end 
+				 else
            dout <= 128'd0;
       end
-  
+	end //end always
 endmodule
-
