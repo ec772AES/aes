@@ -60,8 +60,8 @@ module cipher_core
 
   always @(posedge clk)
 	begin
-			crypto_mode_r 	<= (rst) ? 0 : ((crypto_ready == 0) && (keyed == 1)) ? crypto_mode 	: crypto_mode_r;
-			crypto_ready_r 	<= (rst) ? 0 : (keyed == 1) 												 ? 1'b1					:	crypto_ready_r;
+			crypto_mode_r 	<= (rst) ? 0 : ((crypto_ready == 0) && (keyed == 1)) ? crypto_mode : crypto_mode_r;
+			crypto_ready_r 	<= (rst) ? 0 : (keyed == 1) 	                     ? 1'b1	   : 0;
 	end
 
   // --- Cipher Data In Controller ---
