@@ -12,11 +12,11 @@ module stream_out
    input      [127:0] din,
    output             vout,
    output reg         tout,
-   output     [15:0]  dout
+   output     [31:0]  dout
    );
 
-  reg [127:0]     data;
-   reg [7:0]      valid;
+   reg [127:0]        data;
+   reg [3:0]          valid;
   
 
   // Register the input data & type
@@ -34,13 +34,13 @@ module stream_out
         end
       else
         begin
-          data <= {data[111:0], 16'd0};
+          data <= {data[95:0], 32'd0};
           tout <= tout;
         end
           
 
   // Generate output data
-  assign dout = data[127:112];
+  assign dout = data[127:96];
 
   
   // Generate output valid
@@ -50,12 +50,12 @@ module stream_out
   // Register valid
   always @(posedge clk)
     if (rst)
-      valid <= 8'd0;
+      valid <= 4'd0;
     else
       if (vin)
-        valid <= 8'hFF;
+        valid <= 4'hF;
       else
-        valid <= {1'b0, valid[7:1]};
+        valid <= {1'b0, valid[3:1]};
   
   
 endmodule

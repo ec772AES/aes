@@ -9,13 +9,13 @@ module stream_in
    input              rst,
    input              vin,
    input      [1:0]   tin,
-   input      [15:0]  din,
+   input      [31:0]  din,
    output             vout,
    output reg [1:0]   tout,
    output reg [127:0] dout
    );
   
-  reg [2:0]       counter, counter_r;
+  reg [1:0]       counter, counter_r;
   reg [1:0]       tin_r;
   
 
@@ -25,13 +25,13 @@ module stream_in
       dout <= 128'd0;
     else
       if (vin)
-        dout <= {dout[111:0], din};
+        dout <= {dout[95:0], din};
       else
         dout <= dout;
 
   
   // Generate output valid
-  assign vout = (counter == 3'b000) & (counter_r == 3'b111);
+  assign vout = (counter == 2'b00) & (counter_r == 2'b11);
 
   
   // Register the input type
@@ -39,7 +39,7 @@ module stream_in
     if (rst)
       tin_r <= 2'b00;
     else
-      if (vin & (counter == 3'b000))
+      if (vin & (counter == 2'b00))
         tin_r <= tin;
       else
         tin_r <= tin_r;
@@ -50,7 +50,7 @@ module stream_in
     if (rst)
       tout <= 2'b00;
     else
-      if (counter == 3'b111)
+      if (counter == 2'b11)
         tout <= tin_r;
       else
         tout <= tout;
@@ -60,14 +60,14 @@ module stream_in
   always @(posedge clk)
     if (rst)
       begin
-        counter   <= 4'd0;
-        counter_r <= 4'd0;
+        counter   <= 2'd0;
+        counter_r <= 2'd0;
       end
     else
       begin
         // increment the counter on valid in
         if (vin)
-          counter <= counter + 4'd1;
+          counter <= counter + 2'd1;
         else
           counter <= counter;
 

@@ -11,12 +11,12 @@ module core_top
    // Stream In IF
    input          data_in_valid,
    input [1:0]    data_in_type,
-   input [15:0]   data_in,
+   input [31:0]   data_in,
 
    // Stream Out IF
    output         data_out_valid,
    output         data_out_type,
-   output [15:0]  data_out,
+   output [31:0]  data_out,
 
    // Cipher Core IF
    input          crypto_mode,

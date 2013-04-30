@@ -13,7 +13,7 @@ module core_top_tb;
   logic         clk, rst;
   logic         din_valid, dout_valid, dout_type;
   logic [1:0]   din_type;
-  logic [15:0] din_data, dout_data;
+  logic [31:0] din_data, dout_data;
   logic         crypto_mode, crypto_ready;
 
   // TB signals
@@ -35,12 +35,12 @@ module core_top_tb;
         #1 clk = ~clk;
     end
 
-	initial
-		begin
-			#50000
-				$finish;
-		end
-		
+    initial
+        begin
+            #50000
+                $finish;
+        end
+        
 
   // Conditionally dump waves when needed
   `ifdef DUMP_WAVES
@@ -84,13 +84,13 @@ module core_top_tb;
   //------------------------------------------------------------
   task tx_data (input bit [127:0] tx_data, bit [1:0] tx_type);
      msg_info($sformatf("Transmitting type=%b, data=0x%h", tx_type, tx_data));
-     repeat(8)
+     repeat(4)
        begin
           @(posedge clk);
           din_valid = 1;
           din_type  = tx_type;
-          din_data  = tx_data[127:112];
-          tx_data   = {tx_data[111:0], 16'h0};
+          din_data  = tx_data[127:96];
+          tx_data   = {tx_data[95:0], 32'h0};
        end
   endtask
 
@@ -99,7 +99,7 @@ module core_top_tb;
   // Get data from the DUT
   //------------------------------------------------------------
   task rx_data (output bit [127:0] rx_data, bit rx_type);
-     repeat(8)
+     repeat(4)
        begin
           @(negedge clk);
           while (~dout_valid)
@@ -108,7 +108,7 @@ module core_top_tb;
                @(negedge clk);
             end
           rx_type   = dout_type;
-          rx_data   = {rx_data[111:0], dout_data};
+          rx_data   = {rx_data[95:0], dout_data};
        end
      msg_info($sformatf("Receiving type=%b, data=0x%h", rx_type, rx_data));
   endtask
